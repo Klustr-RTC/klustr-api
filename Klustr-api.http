@@ -1,0 +1,6 @@
+@Klustr_api_HostAddress = http://localhost:5147
+
+GET {{Klustr_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
