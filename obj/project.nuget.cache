@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AWrpuFdjKktxIUCpNwQRoc0BAKqD+vCA8UBjXoPKzQ4glgxrOCH1Q29mpM0fzFsYIeNHWZ64nuBnSyDIyTPVIQ==",
+  "dgSpecHash": "S9xHz58Qu5EhX+hSZDWTcZwnLv1JHxh8VovgU6aKvDqH4oXubtE/7WJxSY3eTBq2Hph0z6RUscA9MjxayyrwiA==",
   "success": true,
-  "projectFilePath": "D:\\WEB DEVELOPMENT\\Klustr-api\\Klustr-api.csproj",
+  "projectFilePath": "D:\\WEB DEVELOPMENT\\klustr-api\\Klustr-api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Rushi Gandhi\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.4\\microsoft.aspnetcore.openapi.8.0.4.nupkg.sha512",
     "C:\\Users\\Rushi Gandhi\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
