@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\WEB DEVELOPMENT\\Klustr-api\\Klustr-api.csproj": {}
+    "D:\\WEB DEVELOPMENT\\klustr-api\\Klustr-api.csproj": {}
   },
   "projects": {
-    "D:\\WEB DEVELOPMENT\\Klustr-api\\Klustr-api.csproj": {
+    "D:\\WEB DEVELOPMENT\\klustr-api\\Klustr-api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\WEB DEVELOPMENT\\Klustr-api\\Klustr-api.csproj",
+        "projectUniqueName": "D:\\WEB DEVELOPMENT\\klustr-api\\Klustr-api.csproj",
         "projectName": "Klustr-api",
-        "projectPath": "D:\\WEB DEVELOPMENT\\Klustr-api\\Klustr-api.csproj",
+        "projectPath": "D:\\WEB DEVELOPMENT\\klustr-api\\Klustr-api.csproj",
         "packagesPath": "C:\\Users\\Rushi Gandhi\\.nuget\\packages\\",
-        "outputPath": "D:\\WEB DEVELOPMENT\\Klustr-api\\obj\\",
+        "outputPath": "D:\\WEB DEVELOPMENT\\klustr-api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Rushi Gandhi\\AppData\\Roaming\\NuGet\\NuGet.Config",

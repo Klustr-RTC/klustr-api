@@ -31,3 +31,4 @@ D:\WEB DEVELOPMENT\Klustr-api\obj\Debug\net8.0\refint\Klustr-api.dll
 D:\WEB DEVELOPMENT\Klustr-api\obj\Debug\net8.0\Klustr-api.pdb
 D:\WEB DEVELOPMENT\Klustr-api\obj\Debug\net8.0\Klustr-api.genruntimeconfig.cache
 D:\WEB DEVELOPMENT\Klustr-api\obj\Debug\net8.0\ref\Klustr-api.dll
+D:\WEB DEVELOPMENT\klustr-api\obj\Debug\net8.0\Klustr-api.sourcelink.json
