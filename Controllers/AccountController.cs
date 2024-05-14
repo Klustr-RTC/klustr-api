@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Klustr_api.Dtos.User;
 using Klustr_api.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Klustr_api.Controllers
@@ -20,7 +21,7 @@ namespace Klustr_api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegistrationDto userRegistrationDto)
+        public async Task<IActionResult> Register([FromBody] UserRegistrationDto userRegistrationDto)
         {
             if (!ModelState.IsValid)
             {
