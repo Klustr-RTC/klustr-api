@@ -37,5 +37,37 @@ namespace Klustr_api.Controllers
 
             return Ok(new { token });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var token = await _userRepo.Login(userLoginDto);
+            if (token == null)
+            {
+                return Unauthorized("Invalid Email or Password");
+            }
+
+            return Ok(new { token });
+        }
+
+        [HttpPost("google-auth")]
+        public async Task<IActionResult> GoogleAuth([FromBody] GoogleAuthDto googleAuthDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var token = await _userRepo.GoogleAuth(googleAuthDto);
+            if (token == null)
+            {
+                return Unauthorized("Invalid Google authentication data");
+            }
+
+            return Ok(new { token });
+        }
     }
 }
