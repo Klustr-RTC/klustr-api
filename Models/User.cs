@@ -17,8 +17,7 @@ namespace Klustr_api.Models
         [Required, MaxLength(100)]
         public string Email { get; set; } = string.Empty;
 
-        [Required]
-        public string PasswordHash { get; set; } = string.Empty;
+        public string? PasswordHash { get; set; }
 
         // Properties for Google authentication
         public string GoogleId { get; set; } = string.Empty;
