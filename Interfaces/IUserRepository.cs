@@ -14,5 +14,6 @@ namespace Klustr_api.Interfaces
         Task<string?> GoogleAuth(GoogleAuthDto googleAuthDto);
         Task<bool> UserExists(string email);
         Task<User?> FindByEmail(string email);
+        Task<User?> FindByUsername(string username);
     }
 }

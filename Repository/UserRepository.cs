@@ -18,6 +18,12 @@ namespace Klustr_api.Repository
         private readonly ApplicationDBContext _context;
         private readonly ITokenService _tokenService;
 
+        private string ExtractUsernameFromEmail(string email)
+        {
+            string[] parts = email.Split('@');
+            return parts[0];
+        }
+
         public UserRepository(ApplicationDBContext context, ITokenService tokenService)
         {
             _context = context;
@@ -27,6 +33,12 @@ namespace Klustr_api.Repository
         public async Task<User?> FindByEmail(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return user;
+        }
+
+        public async Task<User?> FindByUsername(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
             return user;
         }
 
@@ -40,7 +52,7 @@ namespace Klustr_api.Repository
                 {
                     Id = new Guid(),
                     Email = googleAuthDto.Email,
-                    Username = googleAuthDto.Username,
+                    Username = ExtractUsernameFromEmail(googleAuthDto.Email),
                     GoogleId = googleAuthDto.GoogleId,
                     GoogleAccessToken = googleAuthDto.GoogleAccessToken,
                     GoogleRefreshToken = googleAuthDto.GoogleRefreshToken
@@ -50,7 +62,6 @@ namespace Klustr_api.Repository
             }
             else
             {
-                user.Username = googleAuthDto.Username;
                 user.GoogleId = googleAuthDto.GoogleId;
                 user.GoogleAccessToken = googleAuthDto.GoogleAccessToken;
                 user.GoogleRefreshToken = googleAuthDto.GoogleRefreshToken;
