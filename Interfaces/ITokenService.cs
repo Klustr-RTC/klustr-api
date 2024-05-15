@@ -8,6 +8,6 @@ namespace Klustr_api.Interfaces
 {
     public interface ITokenService
     {
-        public string CreateToken(string email, string username);
+        public string CreateToken(Guid userId, string email, string username);
     }
 }
