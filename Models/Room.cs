@@ -25,7 +25,8 @@ namespace Klustr_api.Models
         public RoomType Type { get; set; }
         public bool SaveMessages { get; set; } = false;
         public string JoinCode { get; set; }
-
+        public string CreatedBy { get; set; } = string.Empty;
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         // Navigation properties
         public List<Member> Members { get; set; } = new List<Member>();
         public List<Message> Messages { get; set; } = new List<Message>();

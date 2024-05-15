@@ -66,7 +66,7 @@ namespace Klustr_api.Repository
                 user.GoogleRefreshToken = googleAuthDto.GoogleRefreshToken;
             }
             await _context.SaveChangesAsync();
-            return _tokenService.CreateToken(user.Email, user.Username);
+            return _tokenService.CreateToken(user.Id, user.Email, user.Username);
         }
 
         public async Task<string?> Login(UserLoginDto userLoginDto)
@@ -89,7 +89,7 @@ namespace Klustr_api.Repository
                 return null;
             }
 
-            return _tokenService.CreateToken(user.Email, user.Username);
+            return _tokenService.CreateToken(user.Id, user.Email, user.Username);
         }
 
         public async Task<string?> Register(UserRegistrationDto userRegistrationDto)
@@ -107,7 +107,7 @@ namespace Klustr_api.Repository
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return _tokenService.CreateToken(user.Email, user.Username);
+            return _tokenService.CreateToken(user.Id, user.Email, user.Username);
         }
 
         public async Task<bool> UserExists(string email)

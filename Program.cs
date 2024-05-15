@@ -53,6 +53,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 
 builder.Services.AddAuthentication(options =>
 {

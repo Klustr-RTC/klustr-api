@@ -25,7 +25,7 @@ namespace Klustr_api.Models
         public string GoogleRefreshToken { get; set; } = string.Empty;
 
         // Navigation properties
-        public List<Member> Members { get; set; } = new List<Member>();
+        public List<Room> Rooms { get; set; } = new List<Room>();
         public List<Message> Messages { get; set; } = new List<Message>();
     }
 }
