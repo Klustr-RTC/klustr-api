@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Klustr_api.Interfaces;
 
 namespace Klustr_api.Dtos.User
 {
@@ -10,6 +11,7 @@ namespace Klustr_api.Dtos.User
     {
         [Required(ErrorMessage = "Username is required")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters")]
+        [UniqueUsername(ErrorMessage = "Username is already taken")]
         public string Username { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required")]
@@ -19,5 +21,22 @@ namespace Klustr_api.Dtos.User
         [Required(ErrorMessage = "Password is required")]
         [MinLength(6, ErrorMessage = "Password must be atleast 6 characters long")]
         public string Password { get; set; } = string.Empty;
+    }
+
+
+    public class UniqueUsernameAttribute : ValidationAttribute
+    {
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var userRepo = (IUserRepository)validationContext.GetService(typeof(IUserRepository))!;
+            var existingUser = userRepo.FindByUsername((string)value);
+
+            if (existingUser != null)
+            {
+                return new ValidationResult("Username is already taken.");
+            }
+
+            return ValidationResult.Success;
+        }
     }
 }

@@ -1,4 +1,6 @@
 using backend.Services;
+using DotNetEnv;
+using DotNetEnv.Configuration;
 using Klustr_api.Data;
 using Klustr_api.Interfaces;
 using Klustr_api.Repository;
@@ -9,6 +11,9 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddDotNetEnv(
+    ".env", LoadOptions.TraversePath()
+);
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -79,7 +84,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
