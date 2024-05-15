@@ -18,12 +18,6 @@ namespace Klustr_api.Repository
         private readonly ApplicationDBContext _context;
         private readonly ITokenService _tokenService;
 
-        private string ExtractUsernameFromEmail(string email)
-        {
-            string[] parts = email.Split('@');
-            return parts[0];
-        }
-
         public UserRepository(ApplicationDBContext context, ITokenService tokenService)
         {
             _context = context;
@@ -48,11 +42,16 @@ namespace Klustr_api.Repository
 
             if (user == null)
             {
+                var user1 = await FindByUsername(googleAuthDto.Username);
+                if (user1 != null)
+                {
+                    return null;
+                }
                 user = new User
                 {
                     Id = new Guid(),
                     Email = googleAuthDto.Email,
-                    Username = ExtractUsernameFromEmail(googleAuthDto.Email),
+                    Username = googleAuthDto.Username,
                     GoogleId = googleAuthDto.GoogleId,
                     GoogleAccessToken = googleAuthDto.GoogleAccessToken,
                     GoogleRefreshToken = googleAuthDto.GoogleRefreshToken
@@ -79,6 +78,10 @@ namespace Klustr_api.Repository
                 return null;
             }
 
+            if (user.PasswordHash == null)
+            {
+                return null;
+            }
             var isPassCorrect = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash);
 
             if (!isPassCorrect)

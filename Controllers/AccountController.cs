@@ -64,10 +64,21 @@ namespace Klustr_api.Controllers
             var token = await _userRepo.GoogleAuth(googleAuthDto);
             if (token == null)
             {
-                return Unauthorized("Invalid Google authentication data");
+                return Conflict("Username Already Exists");
             }
 
             return Ok(new { token });
+        }
+        [HttpGet("findByEmail")]
+        public async Task<IActionResult> FindByEmail([FromQuery] string email)
+        {
+            var user = await _userRepo.FindByEmail(email);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            return Ok(user);
         }
     }
 }
