@@ -64,7 +64,7 @@ namespace Klustr_api.Controllers
             var token = await _userRepo.GoogleAuth(googleAuthDto);
             if (token == null)
             {
-                return Unauthorized("Invalid Google authentication data");
+                return Conflict("Username Already Exists");
             }
 
             return Ok(new { token });
