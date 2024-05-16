@@ -28,64 +28,93 @@ namespace Klustr_api.Repository
             return roomModel;
         }
 
-        public async Task<bool> DeleteAsync(string roomId)
+        public async Task<(bool isSuccess, bool isOwner, bool roomExists)> DeleteAsync(string roomId, string userId)
         {
-            var room = await _context.Rooms.FindAsync(roomId);
-            if (room == null)
+            try
             {
-                return false;
-            }
+                var room = await GetRoomByIdAsync(roomId);
+                if (room == null)
+                {
+                    return (false, false, false);
+                }
+                if (room.CreatedBy != userId)
+                {
+                    return (false, false, true);
+                }
 
-            _context.Rooms.Remove(room);
-            await _context.SaveChangesAsync();
-            return true;
+                _context.Rooms.Remove(room);
+                await _context.SaveChangesAsync();
+                return (true, true, true);
+            }
+            catch (Exception e)
+            {
+                return (false, true, true);
+            }
         }
 
-        public async Task<Room?> UpdateAsync(string roomId, UpdateRoomDto updateRoomDto)
+        public async Task<Room?> UpdateAsync(string roomId, string userId, UpdateRoomDto updateRoomDto)
         {
-            var room = await _context.Rooms.FindAsync(roomId);
-            if (room == null)
+            try
+            {
+                var existingRoom = await GetRoomByIdAsync(roomId);
+                if (existingRoom == null)
+                {
+                    return null;
+                }
+                if (existingRoom.CreatedBy != userId)
+                {
+                    return null;
+                }
+                existingRoom.Name = updateRoomDto?.Name!;
+                existingRoom.Description = updateRoomDto?.Description!;
+                existingRoom.Type = updateRoomDto?.Type ?? 0;
+                existingRoom.SaveMessages = updateRoomDto?.SaveMessages ?? false;
+                existingRoom.IsPublic = updateRoomDto?.IsPublic ?? false;
+
+                await _context.SaveChangesAsync();
+                return existingRoom;
+            }
+            catch (Exception e)
             {
                 return null;
             }
-
-            // Update properties if provided
-            if (updateRoomDto.Name != null)
-            {
-                room.Name = updateRoomDto.Name;
-            }
-
-            if (updateRoomDto.Description != null)
-            {
-                room.Description = updateRoomDto.Description;
-            }
-
-            if (updateRoomDto.Type.HasValue)
-            {
-                room.Type = updateRoomDto.Type.Value;
-            }
-
-            if (updateRoomDto.SaveMessages.HasValue)
-            {
-                room.SaveMessages = updateRoomDto.SaveMessages.Value;
-            }
-
-            await _context.SaveChangesAsync();
-            return room;
         }
 
         public async Task<List<Room>> GetRoomsAsync(QueryObject query)
         {
             var rooms = _context.Rooms.AsQueryable();
 
-            // Apply filtering, sorting, paging, etc. based on query parameters
+            if (!string.IsNullOrWhiteSpace(query.Name))
+            {
+                rooms = rooms.Where(r => r.Name.Contains(query.Name));
+            }
+            if (!string.IsNullOrWhiteSpace(query.Description))
+            {
+                rooms = rooms.Where(r => r.Description.Contains(query.Description));
+            }
+            if (query.Type.HasValue)
+            {
+                rooms = rooms.Where(r => r.Type == query.Type.Value);
+            }
+            if (query.isPublic)
+            {
+                rooms = rooms.Where(r => r.IsPublic);
+            }
+            if (query.MinMembers.HasValue)
+            {
+                rooms = rooms.Where(r => r.Members.Count >= query.MinMembers.Value);
+            }
 
+            if (query.MaxMembers.HasValue)
+            {
+                rooms = rooms.Where(r => r.Members.Count <= query.MaxMembers.Value);
+            }
             return await rooms.ToListAsync();
         }
 
         public async Task<Room?> GetRoomByIdAsync(string roomId)
         {
-            return await _context.Rooms.FindAsync(roomId);
+            return await _context.Rooms.FirstOrDefaultAsync(r => r.Id.ToString() == roomId);
         }
 
         public async Task<Room?> GetRoomByJoinCodeAsync(string joinCode)

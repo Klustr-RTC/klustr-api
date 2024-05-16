@@ -74,18 +74,18 @@ namespace Klustr_api.Repository
 
             if (user == null)
             {
-                return new ErrorOrToken { Error = "Invalid email" };
+                return new ErrorOrToken { Error = "Invalid Credentials" };
             }
 
             if (user.PasswordHash == null)
             {
-                return new ErrorOrToken { Error = "Invalid password! Try google auth!" };
+                return new ErrorOrToken { Error = "Invalid Credentials! Try google auth!" };
             }
             var isPassCorrect = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash);
 
             if (!isPassCorrect)
             {
-                return new ErrorOrToken { Error = "Invalid password" };
+                return new ErrorOrToken { Error = "Invalid Credentials" };
             }
 
             var token = _tokenService.CreateToken(user.Id, user.Email, user.Username);

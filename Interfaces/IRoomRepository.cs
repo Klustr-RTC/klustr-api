@@ -12,9 +12,9 @@ namespace Klustr_api.Interfaces
     public interface IRoomRepository
     {
         Task<Room?> CreateAsync(Room roomModel);
-        Task<bool> DeleteAsync(string roomId);
-        Task<Room?> UpdateAsync(string roomId, UpdateRoomDto updateRoomDto);
-        Task<List<Room?>> GetRoomsAsync(QueryObject query);
+        Task<(bool isSuccess, bool isOwner, bool roomExists)> DeleteAsync(string roomId, string userId);
+        Task<Room?> UpdateAsync(string roomId, string userId, UpdateRoomDto updateRoomDto);
+        Task<List<Room>> GetRoomsAsync(QueryObject query);
         Task<Room?> GetRoomByIdAsync(string roomId);
         Task<Room?> GetRoomByJoinCodeAsync(string joinCode);
     }
