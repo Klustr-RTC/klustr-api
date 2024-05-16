@@ -19,11 +19,6 @@ namespace Klustr_api.Models
 
         public string? PasswordHash { get; set; }
 
-        // Properties for Google authentication
-        public string GoogleId { get; set; } = string.Empty;
-        public string GoogleAccessToken { get; set; } = string.Empty;
-        public string GoogleRefreshToken { get; set; } = string.Empty;
-
         // Navigation properties
         public List<Room> Rooms { get; set; } = new List<Room>();
         public List<Message> Messages { get; set; } = new List<Message>();

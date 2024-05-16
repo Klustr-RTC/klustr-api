@@ -9,9 +9,9 @@ namespace Klustr_api.Interfaces
 {
     public interface IUserRepository
     {
-        Task<string?> Register(UserRegistrationDto userRegistrationDto);
-        Task<string?> Login(UserLoginDto userLoginDto);
-        Task<string?> GoogleAuth(GoogleAuthDto googleAuthDto);
+        Task<ErrorOrToken> Register(UserRegistrationDto userRegistrationDto);
+        Task<ErrorOrToken> Login(UserLoginDto userLoginDto);
+        Task<ErrorOrToken> GoogleAuth(GoogleAuthDto googleAuthDto);
         Task<bool> UserExists(string email);
         Task<User?> FindByEmail(string email);
         Task<User?> FindByUsername(string username);

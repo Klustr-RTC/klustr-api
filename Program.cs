@@ -14,6 +14,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddDotNetEnv(
     ".env", LoadOptions.TraversePath()
 );
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "default",
+                      policy =>
+                      {
+                          policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().Build();
+                      });
+});
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -85,6 +93,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("default");
 // app.UseHttpsRedirection();
 app.MapControllers();
 

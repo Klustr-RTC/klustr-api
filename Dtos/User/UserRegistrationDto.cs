@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Klustr_api.Data;
 using Klustr_api.Interfaces;
 
 namespace Klustr_api.Dtos.User
@@ -28,8 +29,8 @@ namespace Klustr_api.Dtos.User
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var userRepo = (IUserRepository)validationContext.GetService(typeof(IUserRepository))!;
-            var existingUser = userRepo.FindByUsername((string)value);
+            var _context = (ApplicationDBContext)validationContext.GetService(typeof(ApplicationDBContext));
+            var existingUser = _context.Users.FirstOrDefault(u => u.Username == value.ToString());
 
             if (existingUser != null)
             {

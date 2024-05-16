@@ -34,8 +34,12 @@ namespace Klustr_api.Controllers
             }
 
             var token = await _userRepo.Register(userRegistrationDto);
+            if (token.Error != null)
+            {
+                return BadRequest(token.Error);
+            }
 
-            return Ok(new { token });
+            return Ok(new { token.Token });
         }
 
         [HttpPost("login")]
@@ -46,12 +50,12 @@ namespace Klustr_api.Controllers
                 return BadRequest(ModelState);
             }
             var token = await _userRepo.Login(userLoginDto);
-            if (token == null)
+            if (token.Error != null)
             {
-                return Unauthorized("Invalid Email or Password");
+                return Unauthorized(token.Error);
             }
 
-            return Ok(new { token });
+            return Ok(new { token.Token });
         }
 
         [HttpPost("google-auth")]
@@ -61,13 +65,12 @@ namespace Klustr_api.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var token = await _userRepo.GoogleAuth(googleAuthDto);
-            if (token == null)
+            var res = await _userRepo.GoogleAuth(googleAuthDto);
+            if (res.Error != null)
             {
-                return Conflict("Username Already Exists");
+                return Unauthorized(res.Error);
             }
-
-            return Ok(new { token });
+            return Ok(new { res.Token });
         }
         [HttpGet("findByEmail")]
         public async Task<IActionResult> FindByEmail([FromQuery] string email)
