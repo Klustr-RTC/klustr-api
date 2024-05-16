@@ -9,5 +9,6 @@ namespace Klustr_api.Interfaces
     public interface ITokenService
     {
         public string CreateToken(Guid userId, string email, string username);
+        public Task<GoogleUserInfo?> GetUserInfoFromAccessToken(string accessToken);
     }
 }

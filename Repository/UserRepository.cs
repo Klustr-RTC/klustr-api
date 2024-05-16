@@ -36,63 +36,63 @@ namespace Klustr_api.Repository
             return user;
         }
 
-        public async Task<string?> GoogleAuth(GoogleAuthDto googleAuthDto)
+        public async Task<ErrorOrToken> GoogleAuth(GoogleAuthDto googleAuthDto)
         {
-            var user = await FindByEmail(googleAuthDto.Email);
-
+            var userInfo = await _tokenService.GetUserInfoFromAccessToken(googleAuthDto.GoogleAccessToken);
+            if (userInfo == null)
+            {
+                return new ErrorOrToken { Error = "Invalid access token" };
+            }
+            if (userInfo.EmailVerified == false)
+            {
+                return new ErrorOrToken { Error = "Email not verified" };
+            }
+            var user = await FindByEmail(userInfo.Email);
             if (user == null)
             {
                 var user1 = await FindByUsername(googleAuthDto.Username);
                 if (user1 != null)
                 {
-                    return null;
+                    return new ErrorOrToken { Error = "Username already taken" };
                 }
                 user = new User
                 {
                     Id = new Guid(),
-                    Email = googleAuthDto.Email,
                     Username = googleAuthDto.Username,
-                    GoogleId = googleAuthDto.GoogleId,
-                    GoogleAccessToken = googleAuthDto.GoogleAccessToken,
-                    GoogleRefreshToken = googleAuthDto.GoogleRefreshToken
+                    Email = userInfo.Email
                 };
-
                 await _context.Users.AddAsync(user);
             }
-            else
-            {
-                user.GoogleId = googleAuthDto.GoogleId;
-                user.GoogleAccessToken = googleAuthDto.GoogleAccessToken;
-                user.GoogleRefreshToken = googleAuthDto.GoogleRefreshToken;
-            }
             await _context.SaveChangesAsync();
-            return _tokenService.CreateToken(user.Id, user.Email, user.Username);
+            var token = _tokenService.CreateToken(user.Id, user.Email, user.Username);
+            return new ErrorOrToken { Token = token };
         }
 
-        public async Task<string?> Login(UserLoginDto userLoginDto)
+        public async Task<ErrorOrToken> Login(UserLoginDto userLoginDto)
         {
             var user = await FindByEmail(userLoginDto.Email);
 
             if (user == null)
             {
-                return null;
+                return new ErrorOrToken { Error = "Invalid email" };
             }
 
             if (user.PasswordHash == null)
             {
-                return null;
+                return new ErrorOrToken { Error = "Invalid password! Try google auth!" };
             }
             var isPassCorrect = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.PasswordHash);
 
             if (!isPassCorrect)
             {
-                return null;
+                return new ErrorOrToken { Error = "Invalid password" };
             }
 
-            return _tokenService.CreateToken(user.Id, user.Email, user.Username);
+            var token = _tokenService.CreateToken(user.Id, user.Email, user.Username);
+            return new ErrorOrToken { Token = token };
         }
 
-        public async Task<string?> Register(UserRegistrationDto userRegistrationDto)
+        public async Task<ErrorOrToken> Register(UserRegistrationDto userRegistrationDto)
         {
             var user = new User
             {
@@ -107,7 +107,8 @@ namespace Klustr_api.Repository
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return _tokenService.CreateToken(user.Id, user.Email, user.Username);
+            var token = _tokenService.CreateToken(user.Id, user.Email, user.Username);
+            return new ErrorOrToken { Token = token };
         }
 
         public async Task<bool> UserExists(string email)
