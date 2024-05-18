@@ -18,8 +18,5 @@ namespace Klustr_api.Models
         public string Email { get; set; } = string.Empty;
 
         public string? PasswordHash { get; set; }
-
-        // Navigation properties
-        public List<Member> Members { get; set; } = [];
     }
 }

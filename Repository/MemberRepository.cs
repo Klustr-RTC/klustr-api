@@ -75,7 +75,7 @@ namespace Klustr_api.Repository
 
         public async Task<List<Member>> GetMembersByRoomAsync(string roomId)
         {
-            var members = await _context.Members.Where(m => m.RoomId.ToString() == roomId).ToListAsync();
+            var members = await _context.Members.Where(m => m.RoomId.ToString() == roomId).Include(r => r.User).ToListAsync();
             return members;
         }
 
