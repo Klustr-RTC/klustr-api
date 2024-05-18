@@ -51,18 +51,28 @@ namespace Klustr_api.Controllers
             try
             {
                 var userId = User.FindFirst("userId")?.Value;
-                var (isSuccess, isOwner, roomExists) = await _memberRepo.DeleteAsync(memberId, userId!);
-                if (!isSuccess)
+                var member = await _memberRepo.GetMemberByIdAsync(memberId);
+                if (member == null)
                 {
                     return NotFound("Member not found");
                 }
+                var room = await _roomRepo.GetRoomByIdAsync(member.RoomId.ToString());
+                if (room == null)
+                {
+                    return NotFound("Room not found");
+                }
+                if (room.CreatedBy == member.UserId.ToString())
+                {
+                    return BadRequest("You can't delete the owner of the room");
+                }
+                var (isSuccess, isOwner) = await _memberRepo.DeleteAsync(memberId, userId!);
                 if (!isOwner)
                 {
                     return Unauthorized("You are not Allowed to delete this member");
                 }
-                if (!roomExists)
+                if (!isSuccess)
                 {
-                    return NotFound("Room not found");
+                    return StatusCode(500, "SomeThing went wrong");
                 }
                 return Ok("Member deleted successfully");
             }
@@ -99,6 +109,10 @@ namespace Klustr_api.Controllers
                 if (room.CreatedBy != userId)
                 {
                     return Unauthorized("You are not the owner of the room");
+                }
+                if (room.CreatedBy == member.UserId.ToString())
+                {
+                    return BadRequest("You can't update the owner of the room");
                 }
                 var updatedMember = await _memberRepo.UpdateAsync(memberId, updateMemberDto);
                 return Ok(updatedMember);

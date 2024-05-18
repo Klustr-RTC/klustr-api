@@ -157,7 +157,7 @@ namespace Klustr_api.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return Forbid("You are not authorized to generate Link for this room.");
+                return Unauthorized("You are not authorized to generate Link for this room.");
             }
             catch (Exception ex)
             {
@@ -165,5 +165,39 @@ namespace Klustr_api.Controllers
             }
         }
 
+        [HttpGet("{roomId}/verifyJoinCode/{joinCode}")]
+        public async Task<IActionResult> VerifyJoinCode(string roomId, string joinCode)
+        {
+            var room = await _roomRepo.GetRoomByIdAsync(roomId);
+            if (room == null)
+            {
+                return NotFound("Room not found");
+            }
+            if (room.JoinCode != joinCode)
+            {
+                return BadRequest("Invalid join code");
+            }
+            return Ok(room.ToRoomDtoFromRoom());
+        }
+        [HttpGet("{roomId}/GetJoinCode")]
+        public async Task<IActionResult> GetJoinCode(string roomId)
+        {
+            var userId = User.FindFirst("userId")?.Value;
+            var room = await _roomRepo.GetRoomByIdAsync(roomId);
+            if (room == null)
+            {
+                return NotFound("Room not found");
+            }
+            var member = await _memberRepo.GetMemberByUserAndRoomAsync(roomId, userId!);
+            if (member == null)
+            {
+                return Unauthorized("You are not a member of this room");
+            }
+            if (!member.IsAdmin)
+            {
+                return Unauthorized("You are not authorized to get join code");
+            }
+            return Ok(new { joinCode = room.JoinCode });
+        }
     }
 }

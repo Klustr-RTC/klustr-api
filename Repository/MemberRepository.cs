@@ -32,14 +32,14 @@ namespace Klustr_api.Repository
             return Member.Entity;
         }
 
-        public async Task<(bool isSuccess, bool isOwner, bool roomExists)> DeleteAsync(string memberId, string userId)
+        public async Task<(bool isSuccess, bool isOwner)> DeleteAsync(string memberId, string userId)
         {
             try
             {
                 var member = await GetMemberByIdAsync(memberId);
                 if (member == null)
                 {
-                    return (false, false, false);
+                    return (false, false);
                 }
                 // user is not itself to delete member
                 if (member.UserId.ToString() != userId)
@@ -48,16 +48,16 @@ namespace Klustr_api.Repository
                     // user is not admin of the room
                     if (requestMember == null || requestMember.IsAdmin == false)
                     {
-                        return (false, false, true);
+                        return (false, false);
                     }
                 }
                 _context.Members.Remove(member);
                 await _context.SaveChangesAsync();
-                return (true, true, true);
+                return (true, true);
             }
             catch (Exception)
             {
-                return (false, true, true);
+                return (false, true);
             }
         }
 
