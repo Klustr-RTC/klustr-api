@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Klustr_api.Data;
+using Klustr_api.Dtos.Member;
 using Klustr_api.Interfaces;
 using Klustr_api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,17 @@ namespace Klustr_api.Repository
 
         public async Task<Member?> CreateAsync(Member member)
         {
+            var room = await _context.Rooms
+                        .Include(r => r.Members)
+                        .FirstOrDefaultAsync(r => r.Id.ToString() == member.RoomId.ToString()) ?? throw new Exception("Room not found");
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id.ToString() == member.UserId.ToString()) ?? throw new Exception("User not found");
+
+            if (room.Members.Any(m => m.UserId == user.Id))
+            {
+                throw new Exception("Member already in the room");
+            }
+
             var Member = await _context.Members.AddAsync(member);
             await _context.SaveChangesAsync();
             return Member.Entity;
@@ -73,23 +85,12 @@ namespace Klustr_api.Repository
             return members;
         }
 
-        public async Task<Member?> UpdateAsync(string memberId, Member member)
+        public async Task<Member?> UpdateAsync(string memberId, UpdateMemberDTO member)
         {
-            try
-            {
-                var existingMember = await GetMemberByIdAsync(memberId);
-                if (existingMember == null)
-                {
-                    return null;
-                }
-                existingMember.IsAdmin = member.IsAdmin;
-                await _context.SaveChangesAsync();
-                return existingMember;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            var existingMember = await GetMemberByIdAsync(memberId) ?? throw new Exception("Member not found");
+            existingMember.IsAdmin = member.IsAdmin;
+            await _context.SaveChangesAsync();
+            return existingMember;
         }
     }
 }

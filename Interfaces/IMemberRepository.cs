@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Klustr_api.Dtos.Member;
 using Klustr_api.Models;
 
 namespace Klustr_api.Interfaces
@@ -10,7 +11,7 @@ namespace Klustr_api.Interfaces
     {
         Task<Member?> CreateAsync(Member member);
         Task<(bool isSuccess, bool isOwner, bool roomExists)> DeleteAsync(string memberId, string userId);
-        Task<Member?> UpdateAsync(string memberId, Member member);
+        Task<Member?> UpdateAsync(string memberId, UpdateMemberDTO member);
         Task<List<Member>> GetMembersByRoomAsync(string roomId);
         Task<List<Member>> GetMembersByUserAsync(string userId);
 
