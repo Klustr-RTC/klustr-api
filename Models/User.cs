@@ -20,7 +20,6 @@ namespace Klustr_api.Models
         public string? PasswordHash { get; set; }
 
         // Navigation properties
-        public List<Room> Rooms { get; set; } = new List<Room>();
-        public List<Message> Messages { get; set; } = new List<Message>();
+        public List<Member> Members { get; set; } = [];
     }
 }

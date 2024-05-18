@@ -27,14 +27,16 @@ namespace Klustr_api.Models
         public string JoinCode { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+        public string ShareableLink { get; set; }
         // Navigation properties
-        public List<Member> Members { get; set; } = new List<Member>();
-        public List<Message> Messages { get; set; } = new List<Message>();
+        public List<Member> Members { get; set; } = [];
+        public List<Message> Messages { get; set; } = [];
 
         public Room()
         {
             Id = Guid.NewGuid();
             JoinCode = GenerateJoinCode();
+            ShareableLink = Guid.NewGuid().ToString();
         }
 
         private string GenerateJoinCode()

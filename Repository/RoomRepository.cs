@@ -121,5 +121,23 @@ namespace Klustr_api.Repository
         {
             return await _context.Rooms.SingleOrDefaultAsync(r => r.JoinCode == joinCode);
         }
+
+        public async Task<string?> GenerateNewShareableLinkAsync(string roomId, string userId)
+        {
+            var room = await _context.Rooms
+            .Include(r => r.Members)
+            .FirstOrDefaultAsync(r => r.Id.ToString() == roomId) ?? throw new Exception("Room not found");
+
+            var isMember = room.Members.Any(rm => rm.Id.ToString() == userId);
+            if (!isMember)
+            {
+                throw new UnauthorizedAccessException("User is not a member of this room");
+            }
+
+            room.ShareableLink = Guid.NewGuid().ToString();
+            await _context.SaveChangesAsync();
+
+            return room.ShareableLink;
+        }
     }
 }
