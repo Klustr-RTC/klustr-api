@@ -18,9 +18,5 @@ namespace Klustr_api.Models
         public string Email { get; set; } = string.Empty;
 
         public string? PasswordHash { get; set; }
-
-        // Navigation properties
-        public List<Room> Rooms { get; set; } = new List<Room>();
-        public List<Message> Messages { get; set; } = new List<Message>();
     }
 }

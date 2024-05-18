@@ -86,11 +86,11 @@ namespace Klustr_api.Repository
 
             if (!string.IsNullOrWhiteSpace(query.Name))
             {
-                rooms = rooms.Where(r => r.Name.Contains(query.Name));
+                rooms = rooms.Where(r => r.Name.ToLower().Contains(query.Name.ToLower()));
             }
             if (!string.IsNullOrWhiteSpace(query.Description))
             {
-                rooms = rooms.Where(r => r.Description.Contains(query.Description));
+                rooms = rooms.Where(r => r.Description.ToLower().Contains(query.Description.ToLower()));
             }
             if (query.Type.HasValue)
             {
@@ -99,15 +99,6 @@ namespace Klustr_api.Repository
             if (query.isPublic)
             {
                 rooms = rooms.Where(r => r.IsPublic);
-            }
-            if (query.MinMembers.HasValue)
-            {
-                rooms = rooms.Where(r => r.Members.Count >= query.MinMembers.Value);
-            }
-
-            if (query.MaxMembers.HasValue)
-            {
-                rooms = rooms.Where(r => r.Members.Count <= query.MaxMembers.Value);
             }
             return await rooms.ToListAsync();
         }
@@ -120,6 +111,23 @@ namespace Klustr_api.Repository
         public async Task<Room?> GetRoomByJoinCodeAsync(string joinCode)
         {
             return await _context.Rooms.SingleOrDefaultAsync(r => r.JoinCode == joinCode);
+        }
+
+        public async Task<string?> GenerateNewShareableLinkAsync(string roomId, string userId)
+        {
+            var room = await _context.Rooms
+            .Include(r => r.Members)
+            .FirstOrDefaultAsync(r => r.Id.ToString() == roomId) ?? throw new Exception("Room not found");
+            var isMember = room.Members.Any(rm => rm.UserId.ToString() == userId);
+            if (!isMember)
+            {
+                throw new UnauthorizedAccessException("User is not a member of this room");
+            }
+
+            room.ShareableLink = Guid.NewGuid().ToString();
+            await _context.SaveChangesAsync();
+
+            return room.ShareableLink;
         }
     }
 }

@@ -34,6 +34,7 @@ namespace Klustr_api.Mappers
                 CreatedBy = roomModel.CreatedBy,
                 CreatedOn = roomModel.CreatedOn,
                 Type = roomModel.Type,
+                ShareableLink = roomModel.ShareableLink
             };
         }
     }

@@ -20,7 +20,6 @@ namespace Klustr_api.Models
         public bool IsAdmin { get; set; }
 
         // Navigation properties
-        public Room? Room { get; set; }
         public User? User { get; set; }
     }
 }

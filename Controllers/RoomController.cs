@@ -17,14 +17,10 @@ namespace Klustr_api.Controllers
     [ApiController]
     [Route("api/room")]
     [Authorize]
-    public class RoomController : ControllerBase
+    public class RoomController(IRoomRepository roomRepo, IMemberRepository memberRepo) : ControllerBase
     {
-        private readonly IRoomRepository _roomRepo;
-
-        public RoomController(IRoomRepository roomRepo)
-        {
-            _roomRepo = roomRepo;
-        }
+        private readonly IRoomRepository _roomRepo = roomRepo;
+        private readonly IMemberRepository _memberRepo = memberRepo;
 
         [HttpPost()]
         public async Task<IActionResult> CreateRoom([FromBody] CreateRoomDto createRoomDto)
@@ -35,12 +31,26 @@ namespace Klustr_api.Controllers
             }
             var roomModel = createRoomDto.ToRoomFromCreateDTO();
             var userId = User.FindFirst("userId")?.Value;
+            // assigning user as the owner of the room
             roomModel.CreatedBy = userId!;
+            // if the room is audio video type, save messages will be false
+            if (roomModel.Type == Room.RoomType.AudioVideo)
+            {
+                roomModel.SaveMessages = false;
+            }
             var room = await _roomRepo.CreateAsync(roomModel);
             if (room == null)
             {
                 return StatusCode(500, "Failed to create room.");
             }
+            // add the owner as a member of the room
+            var member = new Member
+            {
+                RoomId = room.Id,
+                UserId = Guid.Parse(userId!),
+                IsAdmin = true
+            };
+            await _memberRepo.CreateAsync(member);
             var roomDto = room.ToRoomDtoFromRoom();
             var result = new { Room = roomDto, JoinCode = room.JoinCode };
 
@@ -57,14 +67,14 @@ namespace Klustr_api.Controllers
             }
 
             var userId = User.FindFirst("userId")?.Value;
-            var result = await _roomRepo.DeleteAsync(roomId, userId!);
-            if (!result.isSuccess)
+            var (isSuccess, isOwner, roomExists) = await _roomRepo.DeleteAsync(roomId, userId!);
+            if (!isSuccess)
             {
-                if (!result.roomExists)
+                if (!roomExists)
                 {
-                    return NoContent();
+                    return NotFound("Room not found.");
                 }
-                if (!result.isOwner)
+                if (!isOwner)
                 {
                     return StatusCode(403, "You are not allowed to delete this room.");
                 }
@@ -136,6 +146,58 @@ namespace Klustr_api.Controllers
             }
             return Ok(result.ToRoomDtoFromRoom());
         }
+        [HttpPost("{roomId}/generate-link")]
+        public async Task<IActionResult> GenerateNewShareableLink(string roomId)
+        {
+            var userId = User.FindFirst("userId")?.Value;
+            try
+            {
+                var newLink = await _roomRepo.GenerateNewShareableLinkAsync(roomId, userId!);
+                return Ok(new { shareableLink = newLink });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized("You are not authorized to generate Link for this room.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
+        [HttpGet("{roomId}/verifyJoinCode/{joinCode}")]
+        public async Task<IActionResult> VerifyJoinCode(string roomId, string joinCode)
+        {
+            var room = await _roomRepo.GetRoomByIdAsync(roomId);
+            if (room == null)
+            {
+                return NotFound("Room not found");
+            }
+            if (room.JoinCode != joinCode)
+            {
+                return BadRequest("Invalid join code");
+            }
+            return Ok(room.ToRoomDtoFromRoom());
+        }
+        [HttpGet("{roomId}/GetJoinCode")]
+        public async Task<IActionResult> GetJoinCode(string roomId)
+        {
+            var userId = User.FindFirst("userId")?.Value;
+            var room = await _roomRepo.GetRoomByIdAsync(roomId);
+            if (room == null)
+            {
+                return NotFound("Room not found");
+            }
+            var member = await _memberRepo.GetMemberByUserAndRoomAsync(roomId, userId!);
+            if (member == null)
+            {
+                return Unauthorized("You are not a member of this room");
+            }
+            if (!member.IsAdmin)
+            {
+                return Unauthorized("You are not authorized to get join code");
+            }
+            return Ok(new { joinCode = room.JoinCode });
+        }
     }
 }
