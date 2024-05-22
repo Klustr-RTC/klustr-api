@@ -24,6 +24,11 @@ namespace Klustr_api.Repository
             _tokenService = tokenService;
         }
 
+        public async Task<User?> FindById(string userId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
+        }
+
         public async Task<User?> FindByEmail(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -114,6 +119,65 @@ namespace Klustr_api.Repository
         public async Task<bool> UserExists(string email)
         {
             return await _context.Users.AnyAsync(u => u.Email == email);
+        }
+
+        public async Task<bool> DeleteAccountAsync(string userId)
+        {
+            var user = await FindById(userId);
+            if (user == null)
+            {
+                return false;
+            }
+
+            var members = _context.Members.Where(m => m.UserId.ToString() == userId);
+            _context.Members.RemoveRange(members);
+
+            var messages = _context.Messages.Where(m => m.UserId.ToString() == userId);
+            _context.Messages.RemoveRange(messages);
+
+            var rooms = _context.Rooms.Where(r => r.CreatedBy == userId);
+            _context.Rooms.RemoveRange(rooms);
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<User?> UpdateUserAsync(string userId, UpdateUserDto updateUserDto)
+        {
+            var user = await FindById(userId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            // Check if email is unique
+            if (updateUserDto.Email != user.Email)
+            {
+                var emailExists = await _context.Users.AnyAsync(u => u.Email == updateUserDto.Email);
+                if (emailExists)
+                {
+                    throw new InvalidOperationException("Email is already taken.");
+                }
+            }
+
+            // Check if username is unique
+            if (updateUserDto.Username != user.Username)
+            {
+                var usernameExists = await _context.Users.AnyAsync(u => u.Username == updateUserDto.Username);
+                if (usernameExists)
+                {
+                    throw new InvalidOperationException("Username is already taken.");
+                }
+            }
+
+            user.Avatar = updateUserDto.Avatar;
+            user.Email = updateUserDto.Email;
+            user.Username = updateUserDto.Username;
+
+            await _context.SaveChangesAsync();
+            return user;
         }
     }
 }

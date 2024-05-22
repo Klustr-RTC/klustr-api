@@ -29,7 +29,7 @@ namespace Klustr_api.Dtos.User
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var _context = (ApplicationDBContext)validationContext.GetService(typeof(ApplicationDBContext));
+            var _context = (ApplicationDBContext)validationContext.GetService(typeof(ApplicationDBContext))!;
             var existingUser = _context.Users.FirstOrDefault(u => u.Username == value.ToString());
 
             if (existingUser != null)
@@ -37,7 +37,7 @@ namespace Klustr_api.Dtos.User
                 return new ValidationResult("Username is already taken.");
             }
 
-            return ValidationResult.Success;
+            return ValidationResult.Success!;
         }
     }
 }
