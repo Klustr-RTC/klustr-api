@@ -2,6 +2,7 @@ using backend.Services;
 using DotNetEnv;
 using DotNetEnv.Configuration;
 using Klustr_api.Data;
+using Klustr_api.Hubs;
 using Klustr_api.Interfaces;
 using Klustr_api.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +64,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -97,5 +100,6 @@ if (app.Environment.IsDevelopment())
 app.UseCors("default");
 // app.UseHttpsRedirection();
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

@@ -19,5 +19,8 @@ namespace Klustr_api.Models
 
         public string? PasswordHash { get; set; }
         public string Avatar { get; set; } = string.Empty;
+
+        // Navigation properties
+        public List<Message> Messages { get; set; } = new List<Message>();
     }
 }
