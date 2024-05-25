@@ -19,12 +19,14 @@ namespace Klustr_api.Controllers
     public class MessageController : ControllerBase
     {
         private readonly IMessageRepository _messageRepo;
+        private readonly IUserRepository _userRepo;
         private readonly IHubContext<ChatHub, IChatClient> _hubContext;
 
-        public MessageController(IMessageRepository messageRepo, IHubContext<ChatHub, IChatClient> hubContext)
+        public MessageController(IMessageRepository messageRepo, IHubContext<ChatHub, IChatClient> hubContext, IUserRepository userRepo)
         {
             _messageRepo = messageRepo;
             _hubContext = hubContext;
+            _userRepo = userRepo;
         }
 
         [HttpPost]
@@ -40,8 +42,13 @@ namespace Klustr_api.Controllers
                     UserId = createMessageDto.UserId,
                     RoomId = createMessageDto.RoomId,
                 };
-
-                await _hubContext.Clients.All.ReceiveMessage(messageDto);
+                var user = await _userRepo.FindById(createMessageDto.UserId.ToString());
+                if (user == null)
+                {
+                    return NotFound("Sender not found.");
+                }
+                messageDto.User = user.ToUserDtoFromUser();
+                await _hubContext.Clients.Group(createMessageDto.RoomId.ToString()).ReceiveMessage(messageDto);
                 var message = messageDto.ToMessageFromMessageDto();
                 var result = await _messageRepo.CreateMessageAsync(message);
                 if (result == null)
