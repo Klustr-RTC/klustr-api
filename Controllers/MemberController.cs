@@ -132,11 +132,6 @@ namespace Klustr_api.Controllers
             }
             try
             {
-                var isMember = await _memberRepo.GetMemberByUserAndRoomAsync(roomId, User.FindFirst("userId")?.Value!);
-                if (isMember == null)
-                {
-                    return Unauthorized("You are not a member of this room");
-                }
                 var members = await _memberRepo.GetMembersByRoomAsync(roomId);
                 return Ok(members);
             }

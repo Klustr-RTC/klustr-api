@@ -2,6 +2,7 @@ using backend.Services;
 using DotNetEnv;
 using DotNetEnv.Configuration;
 using Klustr_api.Data;
+using Klustr_api.Dtos.Hub;
 using Klustr_api.Hubs;
 using Klustr_api.Interfaces;
 using Klustr_api.Repository;
@@ -20,7 +21,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "default",
                       policy =>
                       {
-                          policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().Build();
+                          policy.WithOrigins("http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .SetIsOriginAllowed((host) => true)
+                          .AllowCredentials();
                       });
 });
 // Add services to the container.
@@ -65,6 +70,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddSingleton<IDictionary<string, UserRoomConnection>>(new Dictionary<string, UserRoomConnection>());
 builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication(options =>
