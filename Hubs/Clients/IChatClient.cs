@@ -15,5 +15,6 @@ namespace Klustr_api.Hubs.Clients
         Task UserJoined(UserRoomConnection userRoomConnection);
         Task UserLeft(UserRoomConnection userRoomConnection);
         Task SendConnectedUsers(List<UserDto?> users);
+        Task JoinRoomResponse(int result, int count);
     }
 }

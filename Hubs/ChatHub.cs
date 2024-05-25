@@ -17,7 +17,7 @@ namespace Klustr_api.Hubs
 
         public async Task JoinRoom(UserRoomConnection userRoomConnection)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, userRoomConnection.Room);
+            var noOfUsers = _connections.Values.Count(x => x.Room == userRoomConnection.Room);
             if (_connections.TryGetValue(Context.ConnectionId, out var existingUserRoomConnection))
             {
                 if (existingUserRoomConnection.Room != userRoomConnection.Room)
@@ -30,9 +30,16 @@ namespace Klustr_api.Hubs
             else
             {
                 await Clients.Group(userRoomConnection.Room).UserJoined(userRoomConnection);
+                if (noOfUsers >= 1)
+                {
+                    await Clients.Caller.JoinRoomResponse(2, noOfUsers);
+                    return;
+                }
             }
-            await SendConnectedUsers(userRoomConnection.Room);
+            await Clients.Caller.JoinRoomResponse(1, noOfUsers);
+            await Groups.AddToGroupAsync(Context.ConnectionId, userRoomConnection.Room);
             _connections[Context.ConnectionId] = userRoomConnection;
+            await SendConnectedUsers(userRoomConnection.Room);
         }
 
         public async Task LeftRoom(UserRoomConnection userRoomConnection)
