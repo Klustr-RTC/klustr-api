@@ -12,9 +12,12 @@ namespace Klustr_api.Hubs.Clients
     public interface IChatClient
     {
         Task ReceiveMessage(MessageDto messageDto);
-        Task UserJoined(UserRoomConnection userRoomConnection);
-        Task UserLeft(UserRoomConnection userRoomConnection);
+        Task UserJoined(UserRoomConnection userRoomConnection, string id);
+        Task UserLeft(UserRoomConnection userRoomConnection, string id);
         Task SendConnectedUsers(List<UserDto?> users);
         Task JoinRoomResponse(int result, int count);
+        Task NewPeer(string id, UserDto user, VideoConfig config);
+        Task ToggleVideo(string id, bool isVideoOn);
+        Task ToggleAudio(string id, bool isAudioOn);
     }
 }

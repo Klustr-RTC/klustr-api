@@ -23,14 +23,14 @@ namespace Klustr_api.Hubs
                 if (existingUserRoomConnection.Room != userRoomConnection.Room)
                 {
                     await Groups.RemoveFromGroupAsync(Context.ConnectionId, existingUserRoomConnection.Room);
-                    await Clients.Group(existingUserRoomConnection.Room).UserLeft(existingUserRoomConnection);
-                    await Clients.Group(userRoomConnection.Room).UserJoined(userRoomConnection);
+                    await Clients.Group(existingUserRoomConnection.Room).UserLeft(existingUserRoomConnection, Context.ConnectionId);
+                    await Clients.Group(userRoomConnection.Room).UserJoined(userRoomConnection, Context.ConnectionId);
                 }
             }
             else
             {
-                await Clients.Group(userRoomConnection.Room).UserJoined(userRoomConnection);
-                if (noOfUsers >= 1)
+                await Clients.Group(userRoomConnection.Room).UserJoined(userRoomConnection, Context.ConnectionId);
+                if (noOfUsers >= 16)
                 {
                     await Clients.Caller.JoinRoomResponse(2, noOfUsers);
                     return;
@@ -46,7 +46,7 @@ namespace Klustr_api.Hubs
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, userRoomConnection.Room);
             _connections.Remove(Context.ConnectionId);
-            await Clients.Group(userRoomConnection.Room).UserLeft(userRoomConnection);
+            await Clients.Group(userRoomConnection.Room).UserLeft(userRoomConnection, Context.ConnectionId);
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
@@ -55,7 +55,8 @@ namespace Klustr_api.Hubs
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, userRoomConnection.Room);
                 _connections.Remove(Context.ConnectionId);
-                await Clients.Group(userRoomConnection.Room).UserLeft(userRoomConnection);
+                await Clients.Group(userRoomConnection.Room).UserLeft(userRoomConnection, Context.ConnectionId);
+
                 await base.OnDisconnectedAsync(exception);
             }
             await base.OnDisconnectedAsync(exception);
@@ -65,6 +66,43 @@ namespace Klustr_api.Hubs
         {
             var users = _connections.Values.Where(x => x.Room == room).Select(x => x.User).ToList();
             await Clients.Caller.SendConnectedUsers(users);
+        }
+
+        // for video call
+        public async Task JoinVideoRoom(UserRoomConnection userRoomConnection, string id, VideoConfig config)
+        {
+            var noOfUsers = _connections.Values.Count(x => x.Room == userRoomConnection.Room);
+            if (_connections.TryGetValue(Context.ConnectionId, out var existingUserRoomConnection))
+            {
+                if (existingUserRoomConnection.Room != userRoomConnection.Room)
+                {
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, existingUserRoomConnection.Room);
+                    await Clients.Group(existingUserRoomConnection.Room).UserLeft(existingUserRoomConnection, Context.ConnectionId);
+                    await Clients.Group(userRoomConnection.Room).UserJoined(userRoomConnection, Context.ConnectionId);
+                }
+            }
+            else
+            {
+                await Clients.Group(userRoomConnection.Room).UserJoined(userRoomConnection, Context.ConnectionId);
+                if (noOfUsers >= 16)
+                {
+                    await Clients.Caller.JoinRoomResponse(2, noOfUsers);
+                    return;
+                }
+            }
+            await Clients.Caller.JoinRoomResponse(1, noOfUsers);
+            await Groups.AddToGroupAsync(Context.ConnectionId, userRoomConnection.Room);
+            _connections[Context.ConnectionId] = userRoomConnection;
+            await SendConnectedUsers(userRoomConnection.Room);
+            await Clients.Group(userRoomConnection.Room).NewPeer(id, userRoomConnection.User!, config);
+        }
+        public async Task ToggleVideo(string peerId, bool isVideoOn)
+        {
+            await Clients.Group(_connections[Context.ConnectionId].Room).ToggleVideo(peerId, isVideoOn);
+        }
+        public async Task ToggleAudio(string peerId, bool isAudioOn)
+        {
+            await Clients.Group(_connections[Context.ConnectionId].Room).ToggleAudio(peerId, isAudioOn);
         }
     }
 }
