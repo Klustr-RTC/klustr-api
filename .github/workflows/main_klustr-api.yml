@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_6bb09d0db64b47988f22cdd78ea43c67 }}/rushi0508/klustr-api:${{ github.sha }}
+        tags: index.docker.io/v1/rushi0508/klustr-api:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
