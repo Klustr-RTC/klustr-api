@@ -48,4 +48,4 @@ jobs:
         app-name: 'klustr-api'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_2c72d999570046e2b422d424b657ed15 }}
-        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_6bb09d0db64b47988f22cdd78ea43c67 }}/rushi0508/klustr-api:${{ github.sha }}'
+        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_6bb09d0db64b47988f22cdd78ea43c67 }}/klustr-api:${{ github.sha }}'
