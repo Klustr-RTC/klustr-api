@@ -30,7 +30,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: index.docker.io/v1/rushi0508/klustr-api:${{ github.sha }}
+        tags: latest
         file: ./Dockerfile
 
   deploy:
