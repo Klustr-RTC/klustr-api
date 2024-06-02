@@ -18,11 +18,6 @@ RUN dotnet publish "Klustr-api.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENV ASPNETCORE_ENVIRONMENT Production
-ENV ConnectionStrings__DefaultConnection='Host=localhost;Port=5432;Database=klustr;Username=postgres;Password=password'
-ENV JWT__Issuer=http://localhost:5246
-ENV JWT__Audience=http://localhost:5246
-ENV JWT__SigningKey=secret
 EXPOSE 80
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "Klustr-api.dll"]
