@@ -18,6 +18,8 @@ RUN dotnet publish "Klustr-api.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV ASPNETCORE_ENVIRONMENT Production
 EXPOSE 80
+EXPOSE 443
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "Klustr-api.dll"]

@@ -109,7 +109,7 @@ app.UseSwaggerUI();
 // }
 
 app.UseCors("default");
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.MapControllers();
 app.MapHub<ChatHub>("/chathub");
 
