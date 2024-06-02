@@ -13,6 +13,11 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+Environment.GetEnvironmentVariables().Keys.Cast<string>().ToList().ForEach(key =>
+{
+    Console.WriteLine($"{key} : {Environment.GetEnvironmentVariable(key)}");
+});
 builder.Configuration.AddDotNetEnv(
     ".env", LoadOptions.TraversePath()
 );
