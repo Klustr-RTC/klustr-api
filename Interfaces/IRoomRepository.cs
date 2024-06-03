@@ -16,6 +16,7 @@ namespace Klustr_api.Interfaces
         Task<Room?> UpdateAsync(string roomId, string userId, UpdateRoomDto updateRoomDto);
         Task<List<Room>> GetRoomsAsync(QueryObject query);
         Task<Room?> GetRoomByIdAsync(string roomId);
+        Task<Room?> GetRoomByShareableLinkAsync(string shareableLink);
         Task<Room?> GetRoomByJoinCodeAsync(string joinCode);
         Task<string?> GenerateNewShareableLinkAsync(string roomId, string userId);
     }

@@ -115,12 +115,17 @@ namespace Klustr_api.Controllers
                     return BadRequest("Invalid message ID format.");
                 }
                 var userId = User.FindFirst("userId")?.Value!;
+                var message = await _messageRepo.GetMessageByIdAsync(messageId);
+                if (message == null)
+                {
+                    return NotFound();
+                }
                 var result = await _messageRepo.DeleteMessageAsync(messageId, userId);
                 if (!result)
                 {
                     return NotFound();
                 }
-
+                await _hubContext.Clients.Group(message.Room!.Id.ToString()).DeleteMessage(messageId);
                 return NoContent();
             }
             catch (Exception ex)
