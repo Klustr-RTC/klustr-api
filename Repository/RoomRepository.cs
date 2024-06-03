@@ -129,5 +129,10 @@ namespace Klustr_api.Repository
 
             return room.ShareableLink;
         }
+
+        public Task<Room?> GetRoomByShareableLinkAsync(string shareableLink)
+        {
+            return _context.Rooms.FirstOrDefaultAsync(r => r.ShareableLink == shareableLink);
+        }
     }
 }

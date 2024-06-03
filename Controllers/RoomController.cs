@@ -99,6 +99,18 @@ namespace Klustr_api.Controllers
 
             return Ok(room.ToRoomDtoFromRoom());
         }
+        [HttpGet("GetRoomByShareableLink/{shareableLink}")]
+        public async Task<IActionResult> GetRoomByShareableLink([FromRoute] string shareableLink)
+        {
+            var room = await _roomRepo.GetRoomByShareableLinkAsync(shareableLink);
+
+            if (room == null)
+            {
+                return NotFound("Room not found");
+            }
+
+            return Ok(room.ToRoomDtoFromRoom());
+        }
 
         [HttpGet("GetRoomById/{roomId}")]
         public async Task<IActionResult> GetRoomById([FromRoute] string roomId)

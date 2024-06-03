@@ -12,6 +12,7 @@ namespace Klustr_api.Hubs.Clients
     public interface IChatClient
     {
         Task ReceiveMessage(MessageDto messageDto);
+        Task DeleteMessage(string messageId);
         Task UserJoined(UserRoomConnection userRoomConnection, string id);
         Task UserLeft(UserRoomConnection userRoomConnection, string id);
         Task SendConnectedUsers(List<UserDto?> users);
