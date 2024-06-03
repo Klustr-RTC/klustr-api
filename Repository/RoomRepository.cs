@@ -96,9 +96,9 @@ namespace Klustr_api.Repository
             {
                 rooms = rooms.Where(r => r.Type == query.Type.Value);
             }
-            if (query.isPublic)
+            if (query.isPublic.HasValue)
             {
-                rooms = rooms.Where(r => r.IsPublic);
+                rooms = rooms.Where(r => r.IsPublic == query.isPublic.Value);
             }
             return await rooms.ToListAsync();
         }

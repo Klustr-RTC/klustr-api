@@ -10,6 +10,6 @@ namespace Klustr_api.Helpers
         public string? Name { get; set; }
         public string? Description { get; set; }
         public Models.Room.RoomType? Type { get; set; }
-        public bool isPublic { get; set; }
+        public bool? isPublic { get; set; }
     }
 }
