@@ -7,6 +7,7 @@ using BCrypt.Net;
 using Klustr_api.Data;
 using Klustr_api.Dtos.User;
 using Klustr_api.Interfaces;
+using Klustr_api.Mappers;
 using Klustr_api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -178,6 +179,12 @@ namespace Klustr_api.Repository
 
             await _context.SaveChangesAsync();
             return user;
+        }
+
+        public async Task<List<UserDto>> FindUsers(string query)
+        {
+            var users = await _context.Users.ToListAsync();
+            return users.Select(u => u.ToUserDtoFromUser()).Where(u => u.Username.Contains(query, StringComparison.CurrentCultureIgnoreCase) || u.Email.Contains(query, StringComparison.CurrentCultureIgnoreCase)).ToList();
         }
     }
 }

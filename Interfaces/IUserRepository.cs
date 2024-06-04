@@ -16,6 +16,7 @@ namespace Klustr_api.Interfaces
         Task<User?> FindByEmail(string email);
         Task<User?> FindById(string userId);
         Task<User?> FindByUsername(string username);
+        Task<List<UserDto>> FindUsers(string query);
         Task<User?> UpdateUserAsync(string userId, UpdateUserDto updateUserDto);
         Task<bool> DeleteAccountAsync(string userId);
     }
