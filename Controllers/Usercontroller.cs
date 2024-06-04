@@ -66,6 +66,19 @@ namespace Klustr_api.Controllers
             return Ok(user.ToUserDtoFromUser());
         }
 
+        [HttpGet("FindUsers/{query}")]
+        public async Task<IActionResult> FindUsers([FromRoute] string query)
+        {
+            var users = await _userRepo.FindUsers(query);
+            if (users == null)
+            {
+                return Ok(new List<UserDto>());
+            }
+
+            return Ok(users);
+        }
+
+
         [HttpDelete()]
         public async Task<IActionResult> DeleteUser()
         {

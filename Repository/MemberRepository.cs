@@ -29,6 +29,7 @@ namespace Klustr_api.Repository
 
             var Member = await _context.Members.AddAsync(member);
             await _context.SaveChangesAsync();
+            member.User = _context.Users.FirstOrDefault(u => u.Id == member.UserId);
             return Member.Entity;
         }
 
