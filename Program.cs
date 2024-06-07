@@ -3,6 +3,7 @@ using DotNetEnv;
 using DotNetEnv.Configuration;
 using Klustr_api.Data;
 using Klustr_api.Dtos.Hub;
+using Klustr_api.Dtos.User;
 using Klustr_api.Hubs;
 using Klustr_api.Interfaces;
 using Klustr_api.Repository;
@@ -73,6 +74,9 @@ builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddSingleton<IDictionary<string, UserRoomConnection>>(new Dictionary<string, UserRoomConnection>());
+builder.Services.AddSingleton<IDictionary<string, string?>>(new Dictionary<string, string?>());
+builder.Services.AddSingleton<IDictionary<string, UserDto>>(new Dictionary<string, UserDto>());
+builder.Services.AddSingleton<List<string>>([]);
 builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication(options =>
