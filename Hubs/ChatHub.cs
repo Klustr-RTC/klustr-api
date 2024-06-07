@@ -225,7 +225,6 @@ namespace Klustr_api.Hubs
         }
         public async Task SendRandomMessage(RandomMessageDto messageDto)
         {
-            Console.WriteLine("SendRandomMessage", messageDto.content);
             if (_randomPairs.TryGetValue(Context.ConnectionId, out var randomUser))
             {
                 if (randomUser != null)
