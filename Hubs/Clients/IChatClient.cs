@@ -20,5 +20,9 @@ namespace Klustr_api.Hubs.Clients
         Task NewPeer(string id, UserDto user, VideoConfig config);
         Task ToggleVideo(string id, bool isVideoOn);
         Task ToggleAudio(string id, bool isAudioOn);
+        Task RandomUserJoined(UserDto user, VideoConfig config, string peerId);
+        Task SkipUser();
+        Task ReceiveRandomMessage(RandomMessageDto message);
+        Task OnCount(int count);
     }
 }
